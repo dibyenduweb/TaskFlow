@@ -1,65 +1,107 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { initializeApp } from 'firebase/app'
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged 
-} from 'firebase/auth'
+import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+const AuthContext = createContext();
+
+// Add error handling for useAuth hook
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
 
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
-
-const AuthContext = createContext()
-
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user)
-      setLoading(false)
-    })
-    return unsubscribe
-  }, [])
+    const initializeAuth = async () => {
+      try {
+        const user = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        
+        if (user && token) {
+          setCurrentUser(JSON.parse(user));
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          
+          // Optional: Verify token validity with backend
+          // await axios.get('http://localhost:5000/api/validate-token');
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        // Clear invalid auth data
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        delete axios.defaults.headers.common['Authorization'];
+        setCurrentUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  async function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password)
-  }
+    initializeAuth();
+  }, []);
 
-  async function register(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password)
-  }
+  const login = async (email, password) => {
+    try {
+      const { data } = await axios.post('http://localhost:5000/api/login', { email, password });
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify({ email: data.email }));
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+      setCurrentUser({ email: data.email });
+      
+      toast.success('Logged in successfully');
+      navigate('/');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Login failed');
+      throw error;
+    }
+  };
 
-  async function logout() {
-    return signOut(auth)
-  }
+  const register = async (email, password) => {
+    try {
+      const { data } = await axios.post('http://localhost:5000/api/register', { email, password });
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify({ email: data.email }));
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+      setCurrentUser({ email: data.email });
+      
+      toast.success('Registered successfully');
+      navigate('/');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Registration failed');
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    delete axios.defaults.headers.common['Authorization'];
+    setCurrentUser(null);
+    
+    toast.success('Logged out successfully');
+    navigate('/login');
+  };
 
   const value = {
     currentUser,
     login,
     register,
-    logout
-  }
+    logout,
+    loading  // Expose loading state if needed
+  };
 
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
-  )
-}
-
-export function useAuth() {
-  return useContext(AuthContext)
+  );
 }

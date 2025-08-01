@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import { Toaster } from 'react-hot-toast';
 import { useTasks } from './hooks/useTasks';
 import TaskTabs from './components/TaskTabs';
+import Footer from './components/Footer';
 
 function AppContent() {
   const { tasks, addTask, updateTask, deleteTask, updateTaskStatus, deleteCompletedTasks } = useTasks();
@@ -46,6 +47,7 @@ function App() {
             />
           </Routes>
         </div>
+        <Footer/>
       </Router>
     </AuthProvider>
   );

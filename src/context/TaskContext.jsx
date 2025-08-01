@@ -22,7 +22,7 @@ export function TaskProvider({ children }) {
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get('http://localhost:5000/api/tasks');
+      const { data } = await axios.get('hhttps://taskflow-server-eight.vercel.app/api/tasks');
       setTasks(data);
     } catch (error) {
       toast.error('Failed to fetch tasks');
@@ -33,7 +33,7 @@ export function TaskProvider({ children }) {
 
   const addTask = async (task) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/tasks', task);
+      const { data } = await axios.post('hhttps://taskflow-server-eight.vercel.app/api/tasks', task);
       setTasks(prev => [...prev, data]);
       toast.success('Task added successfully');
       return data;
@@ -45,7 +45,7 @@ export function TaskProvider({ children }) {
 
   const updateTask = async (id, updates) => {
     try {
-      const { data } = await axios.put(`http://localhost:5000/api/tasks/${id}`, updates);
+      const { data } = await axios.put(`hhttps://taskflow-server-eight.vercel.app/api/tasks/${id}`, updates);
       setTasks(prev => prev.map(t => t._id === id ? data : t));
       toast.success('Task updated successfully');
       return data;
@@ -57,7 +57,7 @@ export function TaskProvider({ children }) {
 
   const deleteTask = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${id}`);
+      await axios.delete(`hhttps://taskflow-server-eight.vercel.app/api/tasks/${id}`);
       setTasks(prev => prev.filter(t => t._id !== id));
       toast.success('Task deleted successfully');
     } catch (error) {

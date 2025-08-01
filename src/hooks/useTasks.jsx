@@ -20,7 +20,7 @@ export function useTasks() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('http://localhost:5000/api/tasks', {
+      const response = await fetch('https://taskflow-server-eight.vercel.app/api/tasks', {
         headers: {
           'Authorization': `Bearer ${await currentUser.getIdToken()}`
         }
@@ -42,7 +42,7 @@ export function useTasks() {
 
  const addTask = async (task) => {
   try {
-    const response = await fetch('http://localhost:5000/api/tasks', {
+    const response = await fetch('https://taskflow-server-eight.vercel.app/api/tasks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export function useTasks() {
 
 const updateTask = async (id, updates) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+    const response = await fetch(`https://taskflow-server-eight.vercel.app/api/tasks/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const updateTask = async (id, updates) => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+      const response = await fetch(`https://taskflow-server-eight.vercel.app/api/tasks/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${await currentUser.getIdToken()}`
@@ -104,7 +104,7 @@ const updateTask = async (id, updates) => {
 
 const completeTask = async (id, remarks) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/tasks/${id}/complete`, {
+    const response = await fetch(`https://taskflow-server-eight.vercel.app/api/tasks/${id}/complete`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ const completeTask = async (id, remarks) => {
 // Add these new methods
 const updateTaskStatus = async (id, status, remarks) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/tasks/${id}/status`, {
+    const response = await fetch(`https://taskflow-server-eight.vercel.app/api/tasks/${id}/status`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ const updateTaskStatus = async (id, status, remarks) => {
 
 const deleteCompletedTasks = async () => {
   try {
-    await fetch('http://localhost:5000/api/tasks/completed', {
+    await fetch('https://taskflow-server-eight.vercel.app/api/tasks/completed', {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${await currentUser.getIdToken()}`

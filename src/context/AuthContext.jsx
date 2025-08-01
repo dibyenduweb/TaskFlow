@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           
           // Optional: Verify token validity with backend
-          // await axios.get('http://localhost:5000/api/validate-token');
+          // await axios.get('hhttps://taskflow-server-eight.vercel.app/api/validate-token');
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/login', { email, password });
+      const { data } = await axios.post('hhttps://taskflow-server-eight.vercel.app/api/login', { email, password });
       
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify({ email: data.email }));
@@ -66,7 +66,7 @@ export function AuthProvider({ children }) {
 
   const register = async (email, password) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/register', { email, password });
+      const { data } = await axios.post('hhttps://taskflow-server-eight.vercel.app/api/register', { email, password });
       
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify({ email: data.email }));
